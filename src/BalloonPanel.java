@@ -6,20 +6,21 @@ import java.util.Random;
 public class BalloonPanel extends InteractivePanel {
     public BalloonFrame frame;
     boolean gameRunning = true;                                     // Killswitch for endgame state
-    ArrayList<Balloon> balloon = new ArrayList<Balloon>();          // The balloons, obviously
+    ArrayList<Balloon> balloon = new ArrayList<Balloon>();                // The balloons, obviously
     float countDown = 0f;                                           // Timer counting down to next balloon spawn
     float maxRadius = 150;                                          // Balloons grow to this radius, then stop
     float squashBy = 10;                                            // When clicked, a balloon's radius is reduced by this many pixels
     float pixelAllowance = 5;                                       // Count a click even if you "miss" by this many pixels
     int score = 0;                                                  // Increases while no balloons are touching, based on the total combined balloon size
     int spawnTries = 0, maxTries = 10;                              // Controls how many times to try spawning a balloon before giving up
-    //    Thread updateThread = new Thread(this);
+    Color stringColor = new Color(255, 255, 255, 100);
     Random rand = new Random();
     Image skyImage;
     Image[] balloonCoverImage = new Image[3];
     Image balloonBlankImage;
     Image balloonEyeImage;
     Point mousePos = new Point(0, 0);
+    int panelHeight;
 
     float eyeMax = .15f;
 
@@ -36,6 +37,8 @@ public class BalloonPanel extends InteractivePanel {
         }
         balloonBlankImage = Toolkit.getDefaultToolkit().createImage(getClass().getResource("BalloonBlank.png"));
         balloonEyeImage = Toolkit.getDefaultToolkit().createImage(getClass().getResource("BalloonEyes.png"));
+
+        panelHeight = frame.height;
     }
 
     public void mousePressed(MouseEvent e) {
@@ -171,6 +174,9 @@ public class BalloonPanel extends InteractivePanel {
 
         for (Balloon b : new ArrayList<Balloon>(balloon)) {
             Rectangle rect = new Rectangle((int)(b.x - b.radius), (int)(b.correctedY() - b.radius), (int)(b.radius * 2), (int)(b.radius * 2));
+
+            offscreenGraphics.setColor(stringColor);
+            offscreenGraphics.drawLine((int)b.x, (int)b.correctedY(), b.tetherPointX, panelHeight);
 
             offscreenGraphics.setColor(b.color);
             offscreenGraphics.fillOval(rect.x + 1, rect.y + 1, rect.width - 2, rect.height - 2);
